@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class StorageService {
@@ -24,7 +24,7 @@ export class StorageService {
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
     const ext = file.originalname.split('.').pop();
-    const key = `${uuidv4()}.${ext}`;
+    const key = `${randomUUID()}.${ext}`;
 
     const upload = new Upload({
       client: this.s3,
@@ -42,7 +42,6 @@ export class StorageService {
   }
 
   async deleteFile(imageUrl: string): Promise<void> {
-    // Extraire la key depuis l'URL publique
     const key = imageUrl.split('/').pop();
 
     if (!key) {
